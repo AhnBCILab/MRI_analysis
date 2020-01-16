@@ -1,41 +1,42 @@
 from parser import Parser
+from collections import OrderedDict
 
 class XMLParser(Parser):
 	def __init__(self):
-		self.default_seg_metadata = {
-			"Filename": self._get_filename,
-			"SubjectID": 'subjectIdentifier',
-			"Visit": 'visitIdentifier',
-			"Group": 'reseaRchgroup',
-			"Age": 'subjectAge',
-			"Sex": 'subjectSex',
-			"MMSE": { "name":'assessmentScore', "attrs":{'attribute': 'MMSCORE'}},
-			"GDSCALE": { "name":'assessmentScore', "attrs":{'attribute': 'GDTOTAL'}},
-			"CDR": { "name":'assessmentScore', "attrs":{'attribute': 'CDGLOBAL'}},
-			"NPI-Q": { "name":'assessmentScore', "attrs":{'attribute': 'NPISCORE'}},
-			"FAQ": { "name":'assesmentScore', "attrs":{'attribute': 'FAQTOTAL'}},
-			"APOE A1": { "name":'subjectInfo', "attrs":{'item': 'APOE A1'}},
-			"APOE A2": { "name":'subjectInfo', "attrs":{'item': 'APOE A2'}},
-			'Study Identifer': { "name":'studyIdentifier' },
-			"Weight": { "name":'weightKg' },
-			"Series Identifer": 'seriesIdentifier',
-			"Acqusisition Type": { "name":'protocol', "attrs":{'term': 'Acquisition Type'}},
-			"Weighting": { "name":'protocol', "attrs":{'term': 'Weighting'}},
-			"Pulse Sequence": { "name":'protocol', "attrs":{'term': 'Pulse Sequence'}},
-			"Slice Thickness": { "name":'protocol', "attrs":{'term': 'Slice Thickness'}},
-			"TE": { "name":'protocol', "attrs":{'term': 'TE'}},
-			"TR": { "name":'protocol', "attrs":{'term': 'TR'}},
-			"TI": { "name":'protocol', "attrs":{'term': 'TI'}},
-			"Coil": { "name":'protocol', "attrs":{'term': 'Coil'}},
-			"Flip Angle": { "name":'protocol', "attrs":{'term': 'Flip Angle'}},
-			"Acquistion Plane": { "name":'protocol', "attrs":{'term': 'Acquisition Plane'}},
-			"Matrix X": { "name":'protocol', "attrs":{'term': 'Matrix X'}},
-			"Matrix Y": { "name":'protocol', "attrs":{'term': 'Matrix Y'}},
-			"Matrix Z": { "name":'protocol', "attrs":{'term': 'Matrix Z'}},
-			"Pixel Spacing X": { "name":'protocol', "attrs":{'term': 'Pixel Spacing X'}},
-			"Pixel Spacing Y": { "name":'protocol', "attrs":{'term': 'Pixel Spacing Y'}},
-			"Field Strength": {"name":'protocol', "attrs":{'term': 'Field Strength'}},
-		}
+		self.default_seg_metadata = OrderedDict([
+			("Filename", self._get_filename),
+			("SubjectID", 'subjectIdentifier'),
+			("Visit", 'visitIdentifier'),
+			("Group", 'reseaRchgroup'),
+			("Age", 'subjectAge'),
+			("Sex", 'subjectSex'),
+			("MMSE", { "name":'assessmentScore', "attrs":{'attribute': 'MMSCORE'}}),
+			("GDSCALE", { "name":'assessmentScore', "attrs":{'attribute': 'GDTOTAL'}}),
+			("CDR", { "name":'assessmentScore', "attrs":{'attribute': 'CDGLOBAL'}}),
+			("NPI-Q", { "name":'assessmentScore', "attrs":{'attribute': 'NPISCORE'}}),
+			("FAQ", { "name":'assesmentScore', "attrs":{'attribute': 'FAQTOTAL'}}),
+			("APOE A1", { "name":'subjectInfo', "attrs":{'item': 'APOE A1'}}),
+			("APOE A2", { "name":'subjectInfo', "attrs":{'item': 'APOE A2'}}),
+			('Study Identifer', { "name":'studyIdentifier' }),
+			("Weight", { "name":'weightKg' }),
+			("Series Identifer", 'seriesIdentifier'),
+			("Acqusisition Type", { "name":'protocol', "attrs":{'term': 'Acquisition Type'}}),
+			("Weighting", { "name":'protocol', "attrs":{'term': 'Weighting'}}),
+			("Pulse Sequence", { "name":'protocol', "attrs":{'term': 'Pulse Sequence'}}),
+			("Slice Thickness", { "name":'protocol', "attrs":{'term': 'Slice Thickness'}}),
+			("TE", { "name":'protocol', "attrs":{'term': 'TE'}}),
+			("TR", { "name":'protocol', "attrs":{'term': 'TR'}}),
+			("TI", { "name":'protocol', "attrs":{'term': 'TI'}}),
+			("Coil", { "name":'protocol', "attrs":{'term': 'Coil'}}),
+			("Flip Angle", { "name":'protocol', "attrs":{'term': 'Flip Angle'}}),
+			("Acquistion Plane", { "name":'protocol', "attrs":{'term': 'Acquisition Plane'}}),
+			("Matrix X", { "name":'protocol', "attrs":{'term': 'Matrix X'}}),
+			("Matrix Y", { "name":'protocol', "attrs":{'term': 'Matrix Y'}}),
+			("Matrix Z", { "name":'protocol', "attrs":{'term': 'Matrix Z'}}),
+			("Pixel Spacing X", { "name":'protocol', "attrs":{'term': 'Pixel Spacing X'}}),
+			("Pixel Spacing Y", { "name":'protocol', "attrs":{'term': 'Pixel Spacing Y'}}),
+			("Field Strength", {"name":'protocol', "attrs":{'term': 'Field Strength'}}),
+		])
 
 	def _get_filename(self):
 		import os
@@ -47,10 +48,10 @@ class XMLParser(Parser):
 
 	def _parse(self):
 		from bs4 import BeautifulSoup
-		output_dict = {}
+		output_dict = OrderedDict()
 		with open(self.source_file, "r") as f:
 			src_content = f.read()		
-			soup = BeautifulSoup(src_content, 'lxml-xml')
+			soup = BeautifulSoup(src_content, 'xml')
 			for header in self.seg_metadata:
 				seg_by = self.seg_metadata[header]
 				if callable(seg_by):
