@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import torch
 from torch.utils.data.dataset import Dataset
 from sklearn.preprocessing import StandardScaler
 
@@ -11,14 +12,13 @@ class BrainDataset(Dataset):
 		# Label Categorization
 		# label = raw_data['Group'].astype('category').cat.codes.astype(int).to_numpy()
 		label = raw_data['Group']
-		self.label = label.replace(['CN', 'MCI', 'AD'], [1, 2, 3]).astype(int).to_numpy()
+		self.label = label.replace(['CN', 'MCI', 'AD'], [0, 1, 2]).astype(int).to_numpy()
 
 		# Data Normalization (Z score)
 		data = raw_data.loc[:, 'BrainSeg':].to_numpy()
 		scaler = StandardScaler().fit(data)
-		data = scaler.transform(data)
+		self.data = scaler.transform(data)
 		assert len(label) == len(data)
-		self.data = torch.tensor(self.data, dtype=torch.float)
 
 	def __getitem__(self, index):
 		return self.data[index], self.label[index]
