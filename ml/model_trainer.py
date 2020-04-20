@@ -5,6 +5,25 @@ import numpy as np
 from torch.utils.data import TensorDataset, DataLoader
 from sklearn.model_selection import KFold
 
+'''
+DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
+
+dataset = BrainDataset('../output.csv')
+model = MyModel().to(DEVICE)
+criterion = nn.CrossEntropyLoss()
+optimizer = optim.Adam(model.parameters(), lr=0.001)
+
+epochs = 10
+batch_size = 16
+trainer = ModelTrainer(model, dataset, DEVICE)
+result = trainer.train(optimizer, 
+					   criterion, 
+					   batch_size=batch_size, 
+					   epochs=epochs,
+					   kfold=10,
+					   iteration=5)
+'''
+
 class ModelTrainer:
 	def __init__(self, model, dataset, DEVICE=None):
 		if (dataset.data is None) or (dataset.label is None):
