@@ -5,7 +5,7 @@ from torch.utils.data.dataset import Dataset
 from sklearn.preprocessing import StandardScaler
 
 class BrainDataset(Dataset):
-	def __init__(self, file_path):
+	def __init__(self, file_path, expand_dim=False):
 		super(BrainDataset, self).__init__()
 		raw_data = pd.read_csv(file_path)
 
@@ -19,6 +19,9 @@ class BrainDataset(Dataset):
 		scaler = StandardScaler().fit(data)
 		self.data = scaler.transform(data)
 		assert len(label) == len(data)
+
+		if expand_dim:
+			self.data = np.expand_dims(self.data, axis=1)
 
 	def __getitem__(self, index):
 		return self.data[index], self.label[index]
