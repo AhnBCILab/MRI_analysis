@@ -112,6 +112,7 @@ class ModelTrainer:
 			iter_accuracy = result[iter_index].mean()
 			if (iter_accuracy > best_accuracy):
 				best_state = _model.state_dict()
+				best_accuracy = iter_accuracy
 			print('=' * 12)
 			print("Iteration {} complete with {:5.2f}% average accuracy".format(
 				   iter_index, iter_accuracy * 100.))
