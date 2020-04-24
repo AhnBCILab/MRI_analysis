@@ -1,5 +1,6 @@
 import os
 import sys
+import argparse
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
 import torch
@@ -13,20 +14,36 @@ from model_trainer import ModelTrainer
 
 DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
 
-dataset = BrainDataset('../output.csv', expand_dim=True, level=2)
-model = CNN1D(len(np.unique(dataset.label))).to(DEVICE)
-criterion = nn.CrossEntropyLoss()
-optimizer = optim.Adam(model.parameters(), lr=0.001)
+def main():
+	parser = argparse.ArgumentParser()
+	parser.add_argument('--data', type=str, help='Data file path', required=True)
+	parser.add_argument('--output', type=str, help='Output file path', required=True)
+	parser.add_argument('--output_model', type=str, help='Model path', default=None)
+	parser.add_argument('--level', type=int, default=0)
+	parser.add_argument('--fold', type=int, default=2)
+	parser.add_argument('--iter', type=int, default=1)
+	parser.add_argument('--batch_size', type=int, default=16)
+	parser.add_argument('--epoch', type=int, default=30)
+	args = parser.parse_args()
 
-epochs = 30
-batch_size = 16
-trainer = ModelTrainer(model, dataset, DEVICE)
-result = trainer.train(optimizer, criterion,
-					   batch_size=batch_size,
-					   epochs=epochs,
-					   kfold=10,
-					   iteration=1)
+	dataset = BrainDataset(args.data, expand_dim=True, level=args.level)
+	model = CNN1D(len(np.unique(dataset.label))).to(DEVICE)
+	criterion = nn.CrossEntropyLoss()
+	optimizer = optim.Adam(model.parameters(), lr=0.001)
 
-result = np.array(result)
-np.savetxt("accuracy_list.txt", result, delimiter=",")
-torch.save(model.state_dict(), "./best_model_output")
+	epochs = args.epoch
+	batch_size = args.batch_size
+	trainer = ModelTrainer(model, dataset, DEVICE)
+	result = trainer.train(optimizer, criterion,
+						   batch_size=batch_size,
+						   epochs=epochs,
+						   kfold=args.fold,
+						   iteration=args.iter)
+
+	result = np.array(result)
+	np.savetxt(args.output, result, delimiter=",")
+	if args.output_model is not None:
+		torch.save(model.state_dict(), args.output_model)
+
+if __name__ == '__main__':
+	main()
