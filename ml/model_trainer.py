@@ -2,6 +2,7 @@ import os
 import copy
 import torch
 import numpy as np
+from utils.earlystopping import EarlyStopping
 from torch.utils.data import TensorDataset, DataLoader
 from sklearn.model_selection import KFold
 
@@ -38,7 +39,7 @@ class ModelTrainer:
 	
 	def train(self, optimizer, criterion, batch_size=1, epochs=1,
 			  kfold=2, iteration=1, shuffle=True, random_state=None,
-			  filepath=None):
+			  filepath=None, patience=7):
 		best_state = []
 		best_accuracy = 0.
 
@@ -65,6 +66,7 @@ class ModelTrainer:
 				train_loader = DataLoader(train_data, batch_size=batch_size, shuffle=False)
 				test_loader = DataLoader(test_data, batch_size=batch_size, shuffle=False)
 				
+				early_stopping = EarlyStopping(patience=patience)
 				for epoch in range(epochs):
 					_model.train()
 					for index, (data, label) in enumerate(train_loader):
@@ -108,6 +110,11 @@ class ModelTrainer:
 						if not os.path.isdir(filepath):
 							os.mkdir(filepath)
 						torch.save(_model.state_dict(), os.path.join(filepath, f"model{iter_index}_{fold_index}_" + datetime.datetime.now().strftime("%m%d_%H:%M:%S")))
+					
+					early_stopping(test_loss)
+					if early_stopping.early_stop:
+						print("Early stopping")
+						break
 
 			iter_accuracy = result[iter_index].mean()
 			if (iter_accuracy > best_accuracy):
