@@ -46,7 +46,8 @@ class ModelTrainer:
 		_kfold = KFold(n_splits=kfold, shuffle=shuffle, random_state=random_state)
 		_data = self.dataset.data.numpy() if isinstance(self.dataset.data, torch.Tensor) else self.dataset.data
 		_label = self.dataset.label
-		
+
+		minimum_early_stopping_epochs = 10		
 		result = np.zeros((iteration, kfold), dtype=np.float)
 		for iter_index in range(iteration):
 			for fold_index, (train_idx, test_idx) in enumerate(_kfold.split(_data)):
@@ -111,7 +112,8 @@ class ModelTrainer:
 							os.mkdir(filepath)
 						torch.save(_model.state_dict(), os.path.join(filepath, f"model{iter_index}_{fold_index}_" + datetime.datetime.now().strftime("%m%d_%H:%M:%S")))
 					
-					early_stopping(test_loss)
+					if epoch >= minimum_early_stopping_epochs:
+						early_stopping(test_loss)
 					if early_stopping.early_stop:
 						print("Early stopping")
 						break

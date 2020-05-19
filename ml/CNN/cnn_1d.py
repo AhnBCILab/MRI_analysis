@@ -8,8 +8,8 @@ class CNN1D(nn.Module):
 		self.conv1 = nn.Conv1d(1, 16, 4)
 		self.conv2 = nn.Conv1d(16, 32, 4)
 		self.fc1_l0 = nn.Linear(1824, 128)
-		self.fc1_l1 = nn.Linear(1248, 128)
-		self.fc1_l2 = nn.Linear(672, 128)
+		self.fc1_l1 = nn.Linear(736, 128)
+		self.fc1_l2 = nn.Linear(512, 128)
 		self.fc2 = nn.Linear(128, 32)
 		self.out = nn.Linear(32, output_len)
 	
@@ -23,7 +23,7 @@ class CNN1D(nn.Module):
 		x = x.view(-1, dim)
 		
 		fc1 = self.fc1_l0 if dim == 1824 else \
-			  self.fc1_l1 if dim == 1248 else \
+			  self.fc1_l1 if dim == 736 else \
 			  self.fc1_l2
 
 		x = F.relu(fc1(x))

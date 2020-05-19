@@ -24,6 +24,7 @@ def main():
 	parser.add_argument('--iter', type=int, default=1)
 	parser.add_argument('--batch_size', type=int, default=16)
 	parser.add_argument('--epoch', type=int, default=30)
+	parser.add_argument('--random_state', type=int, default=None)
 	args = parser.parse_args()
 
 	dataset = BrainDataset(args.data, expand_dim=True, level=args.level)
@@ -38,7 +39,8 @@ def main():
 						   batch_size=batch_size,
 						   epochs=epochs,
 						   kfold=args.fold,
-						   iteration=args.iter)
+						   iteration=args.iter,
+						   random_state=args.random_state)
 
 	result = np.array(result)
 	np.savetxt(args.output, result, delimiter=",")
